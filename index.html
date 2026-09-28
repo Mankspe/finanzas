@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de Finanzas del Proyecto</title>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --primary:#2f6fed; --primary-d:#1c4fc7;
+  --text:#1c2333; --muted:#6b7488; --border:#e3e7f0; --green:#1f9d55; --red:#e0483e;
+  --amber:#f2a13c; --radius:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,var(--primary),var(--primary-d));color:#fff;padding:22px 28px}
+header h1{margin:0;font-size:22px}
+header p{margin:4px 0 0;opacity:.85;font-size:13px}
+nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:14px 28px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+body.dark{--bg:#131722;--card:#1c2130;--text:#e7ebf5;--muted:#8b93a8;--border:#2c3346;--primary:#5b8dff;--primary-d:#4573e0}
+body.dark nav{background:#161b28}
+body.dark th{background:#20263a}
+body.dark input[type=text],body.dark input[type=number],body.dark select{background:#141824;color:var(--text);border-color:var(--border)}
+body.dark .btn-ghost{background:#242b3f;color:var(--text)}
+body.dark .btn-ghost:hover{background:#2d3550}
+body.dark .result{background:#20263a}
+body.dark .product-card{background:#171c2a}
+body.dark .hint{background:#1a2032}
+body.dark .pill{background:#26324f;color:#a9c2ff}
+body.dark .tag{background:#242b3f;color:var(--muted)}
+body.dark td{border-color:var(--border)}
+body.dark .tabBtn{background:#242b3f;color:var(--text)}
+body.dark .tabBtn:hover{background:#2d3550}
+body.dark .tabBtn.active{background:var(--primary);color:#fff}
+body.dark .btn-danger{background:#3a1f22;color:#ff8b83}
+body.dark .btn-danger:hover{background:#4a262a}
+body.dark .chip{background:#242b3f;color:var(--text)}
+body.dark ::placeholder{color:#5c6478}
+body.dark .btn-add-tab{background:#242b3f;color:var(--text)}
+.tabsWrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tabBtn{border:none;background:#eef1f8;color:var(--text);padding:10px 16px;border-radius:999px;font-weight:600;font-size:13.5px;cursor:pointer;transition:.15s}
+.tabBtn:hover{background:#e1e7f8}
+.tabBtn.active{background:var(--primary);color:#fff}
+.tabBtn{cursor:grab}
+.tabBtn.dragging{opacity:.45}
+.tab-icon{pointer-events:none}
+.tab-text{pointer-events:none}
+.btn-add-tab{border:none;background:#eef1f8;color:var(--text);width:34px;height:34px;border-radius:50%;font-weight:700;font-size:17px;cursor:pointer;line-height:1}
+.btn-add-tab:hover{background:#e1e7f8}
+.actionsWrap{display:flex;gap:8px;margin-left:auto;align-items:center}
+main{padding:24px 28px 60px;max-width:1300px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:0 2px 10px rgba(30,40,80,.04)}
+.card h2{margin:0 0 4px;font-size:17px}
+.card .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.grid{display:grid;gap:14px}
+.grid.cols-2{grid-template-columns:1fr 1fr}
+.grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.grid.cols-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}}
+label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px;font-weight:600}
+input[type=text],input[type=number],select{
+  width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:9px;font-size:14px;background:#fbfcff;color:var(--text)
+}
+input:focus,select:focus{outline:2px solid var(--primary);outline-offset:1px}
+.field{margin-bottom:2px}
+.btn{border:none;border-radius:9px;padding:9px 14px;font-weight:600;font-size:13px;cursor:pointer}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-d)}
+.btn-ghost{background:#eef1f8;color:var(--text)}
+.btn-ghost:hover{background:#e1e7f8}
+.btn-danger{background:#fdeceb;color:var(--red)}
+.btn-danger:hover{background:#fbd9d6}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.row-flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{background:#f3f5fb;color:var(--muted);text-align:left;padding:8px 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em}
+td{padding:6px 8px;border-bottom:1px solid var(--border)}
+td input,td select{padding:6px 8px;font-size:13px}
+.table-wrap{overflow-x:auto}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:6px}
+.result{background:#f6f8fd;border:1px solid var(--border);border-radius:11px;padding:12px;position:relative}
+.result .lbl{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.result .val{font-size:19px;font-weight:700;margin-top:3px}
+.result.pos .val{color:var(--green)}
+.result.neg .val{color:var(--red)}
+.result.info .val{color:var(--primary)}
+.pill{display:inline-block;background:#eef4ff;color:var(--primary-d);border-radius:999px;padding:2px 10px;font-size:11.5px;font-weight:700}
+.hint{font-size:12px;color:var(--muted);background:#f7f9fd;border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px;margin:10px 0}
+.checkline{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--border)}
+.checkline:last-child{border-bottom:none}
+.checkline input[type=checkbox]{width:16px;height:16px}
+.checkline .name{flex:1;font-size:13.5px}
+.checkline input[type=number]{width:80px}
+.product-card{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;background:#fcfdff}
+.product-card .phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.product-card .phead input{font-weight:700;font-size:15px;border:none;background:transparent;padding:2px 0;width:auto;flex:1}
+.tag{font-size:11px;background:#eef1f8;padding:2px 8px;border-radius:999px;color:var(--muted);margin-left:6px}
+.chip{background:#eef1f8}
+footer.note{color:var(--muted);font-size:12px;text-align:center;padding:10px 0 30px}
+.info-icon{position:absolute;top:8px;right:10px;width:16px;height:16px;border-radius:50%;background:var(--primary);color:#fff;font-size:11px;line-height:16px;text-align:center;cursor:help;display:inline-block}
+.info-pop{display:none;position:absolute;top:20px;right:0;background:#1c2333;color:#fff;font-size:12px;line-height:1.5;padding:10px 12px;border-radius:9px;width:260px;z-index:100;box-shadow:0 6px 20px rgba(0,0,0,.25);text-align:left;font-weight:400}
+.info-icon:hover .info-pop,.info-icon:focus .info-pop{display:block}
+body.dark .info-pop{background:#0b0e16}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,20,35,.55);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-box{background:var(--card);border-radius:16px;padding:22px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-box h2{margin:0 0 6px}
+.ctx-menu{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:500;overflow:hidden;min-width:180px}
+.ctx-item{padding:10px 14px;font-size:13.5px;cursor:pointer;color:var(--text)}
+.ctx-item:hover{background:var(--bg)}
+.ctx-item.danger{color:var(--red)}
+.badge-ok{color:var(--green);font-weight:700}
+.badge-bad{color:var(--red);font-weight:700}
+.inventory-negative{color:var(--red)!important;font-weight:700}
+.inventory-warning{display:inline-block;margin-left:7px;color:#a96700;background:#fff1d6;border-radius:999px;padding:2px 6px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.section-index{position:fixed;left:max(4px,calc(50% - 850px));top:50%;transform:translateY(-50%);z-index:45;width:170px;max-height:76vh;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:9px;box-shadow:0 4px 18px rgba(30,40,80,.14)}
+.section-index .idx-title{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 6px 6px}
+.section-index button{display:block;width:100%;border:0;background:transparent;color:var(--text);text-align:left;padding:6px;border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.section-index button:hover{background:#eef1f8;color:var(--primary-d)}
+.section-index .idx-sub{padding-left:15px;font-size:11px;color:var(--muted)}
+body.dark .section-index button:hover{background:#242b3f;color:#a9c2ff}
+@media(min-width:1051px) and (max-width:1500px){main{padding-left:205px}}
+@media(max-width:1050px){.section-index{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 Panel de Finanzas del Proyecto</h1>
+  <p>Reemplaza el Excel: escribe los datos que tú tienes, el resto se calcula solo.</p>
+</header>
+<nav id="nav">
+  <div class="tabsWrap" id="tabsWrap"></div>
+  <div class="actionsWrap" id="actionsWrap"></div>
+</nav>
+<main id="main"><div id="pageContainer"></div></main>
+<footer class="note">Los cuadros con fondo gris claro son resultados calculados automáticamente — no los edites. Doble clic en una pestaña para renombrarla, clic derecho para más opciones.</footer>
+
+<script>
+/* ===================== UTILIDADES ===================== */
+const fmt = n => isFinite(n) ? n.toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+const fmtCantidad = n => isFinite(n) ? n.toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:3}) : '—';
+const fmtCostoUnitario = n => {
+  if(!isFinite(n)) return '—';
+  const requiereTresDecimales=Math.abs(Math.round(n*1000)/1000-Math.round(n*100)/100)>1e-10;
+  return n.toLocaleString('es-PE',{minimumFractionDigits:requiereTresDecimales?3:2,maximumFractionDigits:requiereTresDecimales?3:2});
+};
+const fmt0 = n => isFinite(n) ? Math.round(n).toLocaleString('es-PE') : '—';
+const uid = () => Math.random().toString(36).slice(2,9);
+function el(tag,attrs={},...children){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(attrs[k]==null) continue;
+    if(k==='class') e.className=attrs[k];
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2),attrs[k]);
+    else if(k==='html') e.innerHTML=attrs[k];
+    else e.setAttribute(k,attrs[k]);
+  }
+  children.flat().forEach(c=>{ if(c==null) return; e.appendChild((typeof c==='string'||typeof c==='number')?document.createTextNode(String(c)):c);});
+  return e;
+}
+function num(v){ const n=parseFloat(v); return isFinite(n)?n:0; }
+function withScroll(fn){
+  const y = window.scrollY;
+  fn();
+  requestAnimationFrame(()=>window.scrollTo(0,y));
+}
+function field(label,value,onChange,type='number'){
+  return el('div',{class:'field'},
+    el('label',{},label),
+    el('input',{type,value, onchange:e=>withScroll(()=>onChange(e.target.value)), onkeydown:e=>{if(e.key==='Enter')e.target.blur();}})
+  );
+}
+function resultBox(label,val,cls,infoHtml){
+  return el('div',{class:'result '+cls}, infoHtml?infoIcon(infoHtml):null, el('div',{class:'lbl'},label), el('div',{class:'val'},val));
+}
+function addCosteoIndex(container, config){
+  const go=id=>{const target=document.getElementById(id);if(target)target.scrollIntoView({behavior:'smooth',block:'start'});};
+  const btn=(label,id,sub=false)=>el('button',{class:sub?'idx-sub':'',title:label,onclick:()=>go(id)},label);
+  const index=el('aside',{class:'section-index'},
+    el('div',{class:'idx-title'},'Índice de esta sección'),
+    btn(config.materialesLabel,config.materialesId),
+    btn('Productos',config.productosId),
+    ...config.productos.map(p=>btn(p.nombre||'Sin nombre',config.productoPrefix+p.id,true)),
+    btn(config.resumenMaterialesLabel,config.resumenMaterialesId),
+    btn('Resumen total de productos',config.resumenProductosId)
+  );
+  container.appendChild(index);
+}
+function infoIcon(html){
+  return el('span',{class:'info-icon',tabindex:'0'},'ⓘ', el('div',{class:'info-pop',html:html}));
+}
+function dynamicListCard(title,sub,list,onAdd,onRemove,onChange,total){
+  const card = el('div',{class:'card'},
+    el('h2',{},title,' ',el('span',{class:'pill'},'Total: S/ '+fmt(total))),
+    el('p',{class:'sub'},sub)
+  );
+  const wrap = el('div',{class:'table-wrap'});
+  const table = el('table',{},
+    el('thead',{},el('tr',{},el('th',{},'Nombre'),el('th',{},'Monto (S/)'),el('th',{}))),
+    el('tbody',{}, ...list.map(item=>el('tr',{},
+      el('td',{},el('input',{type:'text',value:item.nombre,oninput:e=>{item.nombre=e.target.value;}})),
+      el('td',{},el('input',{type:'number',value:item.valor,oninput:e=>{item.valor=e.target.value;onChange();}})),
+      el('td',{},el('button',{class:'btn btn-danger btn-sm',onclick:()=>onRemove(item)},'✕'))
+    )))
+  );
+  wrap.appendChild(table);
+  card.appendChild(wrap);
+  card.appendChild(el('button',{class:'btn btn-ghost btn-sm',style:'margin-top:10px',onclick:onAdd},'+ Agregar fila'));
+  return card;
+}
+function linreg(points){
+  const n = points.length;
+  const sx=points.reduce((s,p)=>s+p.x,0), sy=points.reduce((s,p)=>s+p.y,0);
+  const sxy=points.reduce((s,p)=>s+p.x*p.y,0), sxx=points.reduce((s,p)=>s+p.x*p.x,0);
+  const a = (n*sxy - sx*sy)/(n*sxx - sx*sx);
+  const b = (sy - a*sx)/n;
+  const z = sy/n; // ȳ = promedio de y (confiabilidad)
+  const detalle = points.map(p=>{
+    const yIdeal = a*p.x+b, diffIdeal = p.y-yIdeal, diffIdeal2 = diffIdeal*diffIdeal;
+    const diffConst = p.y-z, diffConst2 = diffConst*diffConst;
+    return {...p, yIdeal, diffIdeal, diffIdeal2, diffConst, diffConst2};
+  });
+  const ssRes = detalle.reduce((s,p)=>s+p.diffIdeal2,0); // Real vs Ideal
+  const ssTot = detalle.reduce((s,p)=>s+p.diffConst2,0); // Real vs Constante
+  const r2 = 1 - ssRes/ssTot;
+  return {a,b,z,r2,n,sx,sy,sxy,sxx,ssRes,ssTot,detalle};
+}
+
+/* ===================== DATOS POR DEFECTO DE CADA TIPO ===================== */
+function defaultFormulas(){
+  return {
+    precio:'', cantidad:'',
+    costosFijos:[],
+    costosVariables:[],
+    objetivo:{modo:'porcentaje', base:'utilidad', porcentaje:'', montoDirecto:''},
+    elast:{precioI:'',precioF:'',cantI:'',cantF:'',ingI:'',ingF:'',precioOtroI:'',precioOtroF:''}
+  };
+}
+function defaultCosteo(){
+  return {
+    materiales:[],
+    productos:[]
+  };
+}
+function defaultCosteoComidas(){
+  return {
+    materiales:[],
+    productos:[],
+    margenGlobal:''
+  };
+}
+function defaultProyeccion(){
+  return {
+    meses:[],
+    mesObjetivo:''
+  };
+}
+function defaultFlujo(){
+  return { saldoInicial:'', meses:[], costosFijosCategorias:[] };
+}
+function defaultEdo(){
+  return { precio:'', cvu:'', cantidad:'', costosFijos:'', intereses:'', impuestoPct:'', dividendosPct:'', reservasPct:'' };
+}
+
+/* ===================== RENDER: FORMULAS ===================== */
+function renderFormulas(container, data, rerender){
+  const c = container; c.innerHTML='';
+  const F = data;
+  const CF = F.costosFijos.reduce((s,x)=>s+num(x.valor),0);
+  const CVu = F.costosVariables.reduce((s,x)=>s+num(x.valor),0);
+  const P = num(F.precio), Q = num(F.cantidad);
+  const IT = P*Q, CV = CVu*Q, CT = CV+CF, U = IT-CT;
+  const Cu = P-CVu, Ct = Cu*Q;
+  const PE = CF/Cu, Ms = Q-PE;
+  const baseValores = {utilidad:U, costosTotales:CT, ingresosTotales:IT, contribucionTotal:Ct};
+  const OBJ = F.objetivo;
+  const gananciaObjetivo = OBJ.modo==='monto' ? num(OBJ.montoDirecto) : baseValores[OBJ.base]*(1+num(OBJ.porcentaje)/100);
+  const OG = (CF + gananciaObjetivo) / Cu;
+  const Ie = CF/(1-(CVu/P));
+  const Ce = CF + (CVu*PE);
+
+  const card1 = el('div',{class:'card'},
+    el('h2',{},'Datos base'),
+    el('p',{class:'sub'},'Precio, cantidad vendida y todos los costos fijos / variables del negocio.'),
+    el('div',{class:'grid cols-2'},
+      field('Precio de venta (P)', F.precio, v=>{F.precio=v;rerender();}),
+      field('Cantidad vendida (Q)', F.cantidad, v=>{F.cantidad=v;rerender();}),
+    )
+  );
+  c.appendChild(card1);
+
+  c.appendChild(dynamicListCard('Costos fijos (mensuales o del periodo)','Agrega tantas categorías como necesites (renta, sueldos, servicios…).',
+    F.costosFijos, ()=>{F.costosFijos.push({id:uid(),nombre:'Nuevo costo fijo',valor:0}); rerender();},
+    (item)=>{ F.costosFijos = F.costosFijos.filter(x=>x.id!==item.id); rerender();},
+    ()=>rerender(), CF));
+
+  c.appendChild(dynamicListCard('Costos variables unitarios','Costo por cada unidad producida/vendida (materia prima, insumos, etc.).',
+    F.costosVariables, ()=>{F.costosVariables.push({id:uid(),nombre:'Nuevo costo variable',valor:0}); rerender();},
+    (item)=>{ F.costosVariables = F.costosVariables.filter(x=>x.id!==item.id); rerender();},
+    ()=>rerender(), CVu));
+
+  const res = el('div',{class:'card'},
+    el('h2',{},'Resultados automáticos'),
+    el('div',{class:'result-grid'},
+      resultBox('Ingresos totales (IT)', fmt(IT),'info'),
+      resultBox('Costos totales (CT)', fmt(CT),'info'),
+      resultBox('Utilidad (U)', fmt(U), U>=0?'pos':'neg'),
+      resultBox('Contribución unitaria (Cu)', fmt(Cu),'info'),
+      resultBox('Contribución total (Ct)', fmt(Ct),'info'),
+      resultBox('Punto de equilibrio (PE, unidades)', fmt0(PE),'info'),
+      resultBox('Margen de seguridad', fmt0(Ms), Ms>=0?'pos':'neg'),
+      resultBox('Ingreso de equilibrio', fmt(Ie),'info'),
+      resultBox('Costo de equilibrio', fmt(Ce),'info'),
+    )
+  );
+  c.appendChild(res);
+
+  const baseLabels = {utilidad:'Utilidad actual',costosTotales:'Costos totales',ingresosTotales:'Ingresos totales',contribucionTotal:'Contribución total'};
+  const og = el('div',{class:'card'},
+    el('h2',{},'Objetivo de ganancia'),
+    el('p',{class:'sub'},'¿Cuántas unidades hay que vender para lograr la ganancia que quieres? Elige un porcentaje sobre una variable, o escribe el monto exacto que quieres ganar.'),
+    el('div',{class:'row-flex',style:'margin-bottom:10px'},
+      el('select',{onchange:e=>withScroll(()=>{OBJ.modo=e.target.value;rerender();})},
+        el('option',{value:'porcentaje',...(OBJ.modo==='porcentaje'?{selected:'selected'}:{})},'% más de una variable'),
+        el('option',{value:'monto',...(OBJ.modo==='monto'?{selected:'selected'}:{})},'Monto exacto que quiero ganar'),
+      )
+    ),
+    OBJ.modo==='porcentaje' ? el('div',{class:'row-flex',style:'margin-bottom:10px'},
+      el('select',{onchange:e=>withScroll(()=>{OBJ.base=e.target.value;rerender();})},
+        ...Object.keys(baseLabels).map(k=>el('option',{value:k,...(OBJ.base===k?{selected:'selected'}:{})},baseLabels[k]))
+      ),
+      el('input',{type:'number',value:OBJ.porcentaje,style:'width:100px',onchange:e=>withScroll(()=>{OBJ.porcentaje=e.target.value;rerender();}),onkeydown:e=>{if(e.key==='Enter')e.target.blur();}}),
+      el('span',{style:'color:var(--muted);font-size:12px'},'% más → S/ '+fmt(gananciaObjetivo)),
+    ) : el('div',{class:'row-flex',style:'margin-bottom:10px'},
+      el('input',{type:'number',value:OBJ.montoDirecto,style:'width:160px',onchange:e=>withScroll(()=>{OBJ.montoDirecto=e.target.value;rerender();}),onkeydown:e=>{if(e.key==='Enter')e.target.blur();}}),
+      el('span',{style:'color:var(--muted);font-size:12px'},'S/ de ganancia que quieres lograr'),
+    ),
+    el('div',{class:'result-grid'},
+      resultBox('Ganancia objetivo', 'S/ '+fmt(gananciaObjetivo),'info'),
+      resultBox('Unidades a vender (O.G.)', fmt0(OG),'info'),
+    )
+  );
+  c.appendChild(og);
+
+  // Elasticidad
+  const E = F.elast;
+  const epd = ((num(E.cantF)-num(E.cantI))/num(E.cantI)) / ((num(E.precioF)-num(E.precioI))/num(E.precioI));
+  const ey = ((num(E.cantF)-num(E.cantI))/num(E.cantI)) / ((num(E.ingF)-num(E.ingI))/num(E.ingI));
+  const epc = ((num(E.cantF)-num(E.cantI))/num(E.cantI)) / ((num(E.precioOtroF)-num(E.precioOtroI))/num(E.precioOtroI));
+  const elCard = el('div',{class:'card'},
+    el('h2',{},'Elasticidades'),
+    el('p',{class:'sub'},'Escribe el valor inicial y el valor final de cada variable que cambió en el ejercicio. Deja vacío lo que no aplique.'),
+    el('div',{class:'grid cols-2'},
+      elastPair('Precio', 'precioI','precioF',E),
+      elastPair('Cantidad demandada','cantI','cantF',E),
+      elastPair('Ingreso del consumidor','ingI','ingF',E),
+      elastPair('Precio del bien relacionado','precioOtroI','precioOtroF',E),
+    ),
+    el('div',{class:'result-grid'},
+      elastResult('Elasticidad-precio (Epd)', epd, v=> v>1?'Elástica':(v<1&&v>-1?'Inelástica':'Unitaria')),
+      elastResult('Elasticidad-ingreso (Ey)', ey, v=> v>0?'Bien normal':(v<0?'Bien inferior':'Neutro')),
+      elastResult('Elasticidad cruzada (Epc)', epc, v=> v>0?'Sustitutos':(v<0?'Complementarios':'Neutro')),
+    )
+  );
+  c.appendChild(elCard);
+
+  function elastPair(label,ki,kf,obj){
+    return el('div',{},
+      el('label',{},label),
+      el('div',{class:'row-flex'},
+        el('input',{type:'number',placeholder:'Inicial',value:obj[ki],onchange:e=>withScroll(()=>{obj[ki]=e.target.value;rerender();})}),
+        el('input',{type:'number',placeholder:'Final',value:obj[kf],onchange:e=>withScroll(()=>{obj[kf]=e.target.value;rerender();})}),
+      )
+    );
+  }
+  function elastResult(label,val,interp){
+    const ok = isFinite(val);
+    return el('div',{class:'result '+(ok? (val>0?'pos':'neg'):'info')},
+      el('div',{class:'lbl'},label),
+      el('div',{class:'val'}, ok? val.toFixed(2):'—'),
+      el('div',{style:'font-size:11.5px;color:var(--muted);margin-top:2px'}, ok? interp(val):'Completa los datos')
+    );
+  }
+  saveState();
+}
+
+/* ===================== RENDER: COSTEO UNITARIO ===================== */
+function renderCosteo(container, data, rerender){
+  const c = container; c.innerHTML='';
+  const S = data;
+  S.materiales=S.materiales||[]; S.productos=S.productos||[];
+  S.productos.forEach(p=>p.uso=p.uso||{});
+  S.materiales.filter(m=>m.tipo==='prorateado').forEach(m=>S.productos.forEach(p=>{p.uso=p.uso||{};p.uso[m.id]=1;}));
+  const totalProduccionGlobal = S.productos.reduce((s,p)=>s+num(p.cantidad),0) || 1;
+
+  function costoUnitMaterial(m){
+    if(m.tipo==='fisico') return (num(m.costoTotal)*(num(m.vecesComprar)||1))/(num(m.cantidadViene)*(num(m.vecesComprar)||1)||1);
+    return num(m.costoTotal)/totalProduccionGlobal;
+  }
+  function cantidadDisponible(m){ return num(m.cantidadViene)*(num(m.vecesComprar)||1); }
+  function cantidadUsada(m){ return m.tipo==='prorateado'?0:S.productos.reduce((s,p)=>s+num(p.uso&&p.uso[m.id])*num(p.cantidad),0); }
+  function cantidadRestante(m){ return cantidadDisponible(m)-cantidadUsada(m); }
+  function valorSobrante(m){ return Math.max(0,cantidadRestante(m))*costoUnitMaterial(m); }
+  function sobranteAlto(m){ const comprado=num(m.costoTotal)*(num(m.vecesComprar)||1); return valorSobrante(m)>0 && comprado>0 && valorSobrante(m)/comprado>=0.25; }
+
+  const matCard = el('div',{class:'card',id:'productos-materiales'},
+    el('h2',{},'Materiales, servicios y otros gastos'),
+    el('p',{class:'sub'},'Agrega todo lo que compras para el proyecto. "Costo por unidad física" divide entre la cantidad que viene en el paquete (ej: 240 soles / 100 macetas). "Prorateado por producción total" divide el gasto entre TODAS las unidades que vas a fabricar (para servicios, botánico, stand, transporte, etc.).')
+  );
+  const mwrap = el('div',{class:'table-wrap'});
+  const mtable = el('table',{},
+    el('thead',{},el('tr',{},
+       el('th',{},'Nombre'),el('th',{},'Costo total (S/)'),el('th',{},'Cantidad que viene'),el('th',{},'Cantidad de veces a comprar'),
+      el('th',{},'Tipo'),el('th',{},'Costo por unidad'),el('th',{}))),
+    el('tbody',{}, ...S.materiales.map(m=>{
+      const cu = costoUnitMaterial(m);
+      return el('tr',{},
+        el('td',{},el('input',{type:'text',value:m.nombre,oninput:e=>{m.nombre=e.target.value;}})),
+        el('td',{},el('input',{type:'number',value:m.costoTotal,onchange:e=>withScroll(()=>{m.costoTotal=e.target.value;rerender();})})),
+         el('td',{}, m.tipo==='fisico' ? el('input',{type:'number',value:m.cantidadViene,onchange:e=>withScroll(()=>{m.cantidadViene=e.target.value;rerender();})}) : el('span',{style:'color:var(--muted);font-size:12px'},'— (usa producción total: '+totalProduccionGlobal+')')),
+         el('td',{},m.tipo==='fisico'?el('input',{type:'number',min:'1',value:m.vecesComprar??1,onchange:e=>withScroll(()=>{m.vecesComprar=e.target.value;rerender();})}):el('span',{style:'color:var(--muted);font-size:12px'},'—')),
+         el('td',{},el('select',{onchange:e=>{m.tipo=e.target.value; if(m.tipo==='prorateado'){ S.productos.forEach(p=>{p.uso=p.uso||{};p.uso[m.id]=1;}); } rerender();}},
+          el('option',{value:'fisico',...(m.tipo==='fisico'?{selected:'selected'}:{})},'Por unidad física'),
+          el('option',{value:'prorateado',...(m.tipo==='prorateado'?{selected:'selected'}:{})},'Prorateado (producción total)'),
+        )),
+        el('td',{},el('span',{class:'pill'},'S/ '+fmtCostoUnitario(cu))),
+         el('td',{},el('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.materiales=S.materiales.filter(x=>x.id!==m.id);S.productos.forEach(p=>delete p.uso[m.id]);rerender();}},'✕'))
+      );
+    }))
+  );
+  mwrap.appendChild(mtable);
+  matCard.appendChild(mwrap);
+  matCard.appendChild(el('button',{class:'btn btn-ghost btn-sm',style:'margin-top:10px',onclick:()=>{S.materiales.push({id:uid(),nombre:'Nuevo material',costoTotal:0,cantidadViene:1,vecesComprar:1,tipo:'fisico'});rerender();}},'+ Agregar material'));
+  c.appendChild(matCard);
+
+  const prodWrap = el('div',{class:'card',id:'productos-lista'},
+    el('h2',{},'Productos'),
+    el('p',{class:'sub'},'Marca qué materiales usa cada producto (y cuántas unidades de ese material por producto). El precio de venta se calcula con el método que elijas.'),
+  );
+  prodWrap.appendChild(el('div',{class:'row-flex',style:'margin:4px 0 14px'},
+    el('span',{style:'font-size:12.5px;color:var(--muted);font-weight:600'},'Margen de ganancia para todos:'),
+    el('input',{type:'number',value:S.margenGlobal??'',placeholder:'%',style:'width:90px',onchange:e=>{S.margenGlobal=e.target.value;saveState();}}),
+    el('span',{style:'color:var(--muted);font-size:12px'},'%'),
+    el('button',{class:'btn btn-ghost btn-sm',onclick:()=>{S.productos.forEach(p=>{p.metodo='margen';p.margen=num(S.margenGlobal);});rerender();}},'Establecer para todos')
+  ));
+  const resumenProductos=[];
+  S.productos.forEach(p=>{
+    const cvu = S.materiales.reduce((s,m)=> s + (p.uso[m.id]!=null ? costoUnitMaterial(m)*num(p.uso[m.id]) : 0), 0);
+    const cant = num(p.cantidad);
+    const cv = cvu*cant;
+    let precio;
+    if(p.metodo==='margen') precio = cvu*(1+num(p.margen)/100);
+    else if(p.metodo==='objetivo') precio = (cv + num(p.gananciaObjetivo))/(cant||1);
+    else precio = num(p.precioManual);
+    const precioRedondeado = Math.ceil(precio);
+    const precioParaResultados = p.basePrecio==='redondeado' ? precioRedondeado : precio;
+    const it = precioParaResultados*cant;
+    const utilidad = it-cv;
+    const peUnidades = cvu>0 ? cv/precioParaResultados : 0;
+    resumenProductos.push({nombre:p.nombre,cantidad:cant,cvu,precio:precioParaResultados,ingreso:it,costo:cv,utilidad,peUnidades});
+
+    const pc = el('div',{class:'product-card',id:'productos-producto-'+p.id});
+    pc.appendChild(el('div',{class:'phead'},
+      el('input',{type:'text',value:p.nombre,oninput:e=>{p.nombre=e.target.value;}}),
+      el('span',{class:'tag'},'Producción: '+cant+' u.'),
+      el('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.productos=S.productos.filter(x=>x.id!==p.id);rerender();}},'✕ Quitar producto')
+    ));
+    pc.appendChild(el('div',{class:'grid cols-2'},
+      field('Cantidad a producir', p.cantidad, v=>{p.cantidad=v;rerender();}),
+      el('div',{},el('label',{},'Costo variable unitario (CVu)'), el('div',{class:'result info',style:'margin-top:0'},el('div',{class:'val'},'S/ '+fmt(cvu))))
+    ));
+    pc.appendChild(el('div',{class:'row-flex',style:'margin:10px 0 4px'},
+      el('div',{style:'font-size:12.5px;color:var(--muted);font-weight:600'},'Materiales que usa este producto'),
+      el('button',{class:'btn btn-ghost btn-sm',title:'Alternar entre todos los materiales y solo los seleccionados',onclick:()=>{p.soloSeleccionados=!p.soloSeleccionados;rerender();}},
+        p.soloSeleccionados ? '▴ Mostrar todos' : '▾ Solo seleccionados'
+      )
+    ));
+    S.materiales.filter(m=>!p.soloSeleccionados || p.uso[m.id]!=null).forEach(m=>{
+      const checked = p.uso[m.id]!=null;
+      const esProrateado = m.tipo==='prorateado';
+      let qtyEl;
+      if(!checked) qtyEl = el('span',{style:'width:80px;display:inline-block'});
+      else if(esProrateado) qtyEl = el('input',{type:'number',value:1,disabled:'disabled',title:'Prorateado: se reparte según la cantidad de este producto, no se edita'});
+      else qtyEl = el('input',{type:'number',value:p.uso[m.id],step:'0.1',onchange:e=>withScroll(()=>{p.uso[m.id]=e.target.value;rerender();})});
+      pc.appendChild(el('div',{class:'checkline'},
+        el('input',{type:'checkbox',checked:checked?'checked':null,disabled:esProrateado?'disabled':null,title:esProrateado?'Se incluye automáticamente por ser prorrateado':'', onchange:e=>{ if(e.target.checked){p.uso[m.id]=1;} else {delete p.uso[m.id];} rerender();}}),
+        el('span',{class:'name'}, m.nombre, ' ', el('span',{style:'color:var(--muted);font-size:11.5px'},esProrateado?'(S/ '+fmtCostoUnitario(costoUnitMaterial(m))+' c/u · prorrateado)':'(S/ '+fmtCostoUnitario(costoUnitMaterial(m))+' c/u | '),!esProrateado?el('span',{class:cantidadRestante(m)<0?'inventory-negative':'',style:'font-size:11.5px'},fmtCantidad(cantidadRestante(m))+' u. restante'):null,el('span',{style:'color:var(--muted);font-size:11.5px'},esProrateado?'':')')),
+        qtyEl
+      ));
+    });
+    pc.appendChild(el('div',{style:'margin:14px 0 4px;font-size:12.5px;color:var(--muted);font-weight:600'},'Precio de venta'));
+    pc.appendChild(el('div',{class:'row-flex'},
+      el('select',{onchange:e=>{p.metodo=e.target.value;rerender();}},
+        el('option',{value:'margen',...(p.metodo==='margen'?{selected:'selected'}:{})},'Margen de ganancia %'),
+        el('option',{value:'objetivo',...(p.metodo==='objetivo'?{selected:'selected'}:{})},'Ganancia total objetivo'),
+        el('option',{value:'manual',...(p.metodo==='manual'?{selected:'selected'}:{})},'Precio específico'),
+      ),
+      p.metodo==='margen' ? el('input',{type:'number',value:p.margen,onchange:e=>withScroll(()=>{p.margen=e.target.value;rerender();}),style:'width:110px'}) : null,
+      p.metodo==='margen' ? el('span',{style:'color:var(--muted);font-size:12px'},'%') : null,
+      p.metodo==='objetivo' ? el('input',{type:'number',value:p.gananciaObjetivo,onchange:e=>withScroll(()=>{p.gananciaObjetivo=e.target.value;rerender();}),style:'width:140px'}) : null,
+      p.metodo==='objetivo' ? el('span',{style:'color:var(--muted);font-size:12px'},'S/ ganancia total') : null,
+      p.metodo==='manual' ? el('input',{type:'number',value:p.precioManual,onchange:e=>withScroll(()=>{p.precioManual=e.target.value;rerender();}),style:'width:110px'}) : null,
+    ));
+    pc.appendChild(el('div',{class:'row-flex',style:'margin-top:8px'},
+      el('span',{style:'color:var(--muted);font-size:12px'},'Usar para ingreso y utilidad:'),
+      el('select',{onchange:e=>{p.basePrecio=e.target.value;rerender();}},
+        el('option',{value:'calculado',...((p.basePrecio||'calculado')==='calculado'?{selected:'selected'}:{})},'Precio de venta calculado'),
+        el('option',{value:'redondeado',...(p.basePrecio==='redondeado'?{selected:'selected'}:{})},'Precio redondeado sugerido')
+      )
+    ));
+    pc.appendChild(el('div',{class:'result-grid',style:'margin-top:12px'},
+      resultBox('Costo total del producto', 'S/ '+fmt(cv),'info'),
+      resultBox('Precio de venta', 'S/ '+fmt(precio),'info'),
+      resultBox('Precio redondeado sugerido', 'S/ '+precioRedondeado,'info'),
+      resultBox('Ingreso total', 'S/ '+fmt(it),'info'),
+      resultBox('Utilidad', 'S/ '+fmt(utilidad), utilidad>=0?'pos':'neg'),
+      resultBox('Mínimo de unidades para cubrir costos', fmt(peUnidades)+' u. = '+Math.ceil(peUnidades).toLocaleString('es-PE')+' u. (redondeado)','info'),
+    ));
+    prodWrap.appendChild(pc);
+  });
+  prodWrap.appendChild(el('button',{class:'btn btn-primary btn-sm',onclick:()=>{const uso={};S.materiales.filter(m=>m.tipo==='prorateado').forEach(m=>uso[m.id]=1);S.productos.push({id:uid(),nombre:'Nuevo producto',cantidad:0,uso,metodo:'margen',margen:0,gananciaObjetivo:0,precioManual:0});rerender();}},'+ Agregar producto'));
+  c.appendChild(prodWrap);
+
+  const materialesFisicos=S.materiales.filter(m=>m.tipo==='fisico');
+  const dineroSobrante=materialesFisicos.reduce((s,m)=>s+Math.max(0,cantidadRestante(m))*costoUnitMaterial(m),0);
+  const costoTotalComprado=S.materiales.reduce((s,m)=>s+num(m.costoTotal)*(m.tipo==='fisico'?(num(m.vecesComprar)||1):1),0);
+  const resumenMateriales=el('div',{class:'card',id:'productos-resumen-materiales'},
+    el('h2',{},'Resumen de los materiales'),
+    el('p',{class:'sub'},'El dinero sobrante representa material ya comprado que no se usará con las cantidades actuales. Se alerta cuando representa 25% o más de lo comprado.'),
+    el('div',{class:'table-wrap'},el('table',{},
+      el('thead',{},el('tr',{},el('th',{},'Nombre del material'),el('th',{},'Cantidad que sobró'),el('th',{},'Dinero que representa esta cantidad sobrante'))),
+      el('tbody',{},...materialesFisicos.map(m=>el('tr',{},
+        el('td',{},m.nombre),
+        el('td',{class:cantidadRestante(m)<0?'inventory-negative':''},fmtCantidad(cantidadRestante(m))+' u.'),
+        el('td',{},'S/ '+fmt(valorSobrante(m)),sobranteAlto(m)?el('span',{class:'inventory-warning',title:'Alerta: el valor sobrante de este material representa 25% o más de lo comprado.'},'⚠ Sobrante alto'):null)
+      )))
+    )),
+    el('div',{class:'result-grid',style:'margin-top:16px'},
+      resultBox('Dinero gastado extra (sobrante)','S/ '+fmt(dineroSobrante),dineroSobrante>0?'neg':'info'),
+      resultBox('% de los costos totales comprados',fmt(costoTotalComprado>0?dineroSobrante/costoTotalComprado*100:0)+'%',dineroSobrante>0?'neg':'info')
+    )
+  );
+  c.appendChild(resumenMateriales);
+
+  const ingresosTotales=resumenProductos.reduce((s,p)=>s+p.ingreso,0);
+  const costosVariablesTotales=resumenProductos.reduce((s,p)=>s+p.costo,0);
+  const utilidadTotal=ingresosTotales-costosVariablesTotales;
+  const porcentajeUtilidad=ingresosTotales>0 ? (utilidadTotal/ingresosTotales)*100 : 0;
+  const resumenCard=el('div',{class:'card',id:'productos-resumen-productos'},
+    el('h2',{},'Resumen total de productos'),
+    el('p',{class:'sub'},'Los precios, ingresos y utilidades reflejan la opción elegida en cada producto.'),
+    el('div',{class:'table-wrap'},el('table',{},
+      el('thead',{},el('tr',{},
+        el('th',{},'Producto'),el('th',{},'Cantidad'),el('th',{},'Precio de fabricación'),
+        el('th',{},'Precio de venta'),el('th',{},'Ingreso total'),el('th',{},'Utilidad'),el('th',{},'Mínimo de unidades para cubrir costos')
+      )),
+      el('tbody',{},...resumenProductos.map(p=>el('tr',{},
+        el('td',{},p.nombre),el('td',{},fmtCantidad(p.cantidad)),el('td',{},'S/ '+fmt(p.cvu)),
+        el('td',{},'S/ '+fmt(p.precio)),el('td',{},'S/ '+fmt(p.ingreso)),el('td',{},'S/ '+fmt(p.utilidad)),
+        el('td',{},fmt(p.peUnidades)+' u. = '+Math.ceil(p.peUnidades).toLocaleString('es-PE')+' u.')
+      )))
+    )),
+    el('div',{class:'result-grid',style:'margin-top:16px'},
+      resultBox('Ingresos totales','S/ '+fmt(ingresosTotales),'info'),
+      resultBox('Costos variables','S/ '+fmt(costosVariablesTotales),'info'),
+      resultBox('Utilidad','S/ '+fmt(utilidadTotal),utilidadTotal>=0?'pos':'neg'),
+      resultBox('% de utilidad',fmt(porcentajeUtilidad)+'%',utilidadTotal>=0?'pos':'neg')
+    )
+  );
+  c.appendChild(resumenCard);
+  addCosteoIndex(c,{materialesLabel:'Materiales',materialesId:'productos-materiales',productosId:'productos-lista',productos:S.productos,productoPrefix:'productos-producto-',resumenMaterialesLabel:'Resumen de los materiales',resumenMaterialesId:'productos-resumen-materiales',resumenProductosId:'productos-resumen-productos'});
+
+  c.appendChild(el('div',{class:'hint'},'Producción total combinada de todos los productos: <b>'+totalProduccionGlobal+' unidades</b> (se usa para prorratear los materiales marcados como "Prorateado").'));
+  saveState();
+}
+
+/* ===================== COSTEO: INGREDIENTES DE COMIDAS ===================== */
+function renderCosteoComidas(container, data, rerender){
+  const c=container; c.innerHTML='';
+  const S=data;
+  S.materiales=S.materiales||[]; S.productos=S.productos||[];
+  S.productos.forEach(p=>p.uso=p.uso||{});
+  S.materiales.filter(m=>m.tipo==='prorateado').forEach(m=>S.productos.forEach(p=>{p.uso=p.uso||{};p.uso[m.id]=1;}));
+  const totalProduccion=S.productos.reduce((s,p)=>s+num(p.cantidad),0)||1;
+  const unidadBase=m=>(m.medida==='L'||m.medida==='ml')?'ml':(m.medida==='Kg'||m.medida==='g')?'g':'unid.';
+  const factorMedida=m=>(m.medida==='L'||m.medida==='Kg')?1000:(m.medida==='docena'?12:1);
+  const cantidadDisponible=m=>num(m.cantidadViene)*factorMedida(m)*(num(m.vecesComprar)||1);
+  const costoPorMedida=m=>m.tipo==='prorateado' ? num(m.costoTotal)/totalProduccion : (num(m.costoTotal)*(num(m.vecesComprar)||1))/(cantidadDisponible(m)||1);
+  const cantidadUsada=m=>m.tipo==='prorateado' ? 0 : S.productos.reduce((s,p)=>s+num(p.uso&&p.uso[m.id])*num(p.cantidad),0);
+  const cantidadRestante=m=>cantidadDisponible(m)-cantidadUsada(m);
+  const valorSobrante=m=>Math.max(0,cantidadRestante(m))*costoPorMedida(m);
+  const sobranteAlto=m=>{const comprado=num(m.costoTotal)*(num(m.vecesComprar)||1);return valorSobrante(m)>0&&comprado>0&&valorSobrante(m)/comprado>=0.25;};
+  const nuevoIngrediente=()=>({id:uid(),nombre:'Nuevo ingrediente',costoTotal:0,cantidadViene:0,medida:'g',vecesComprar:1,tipo:'fisico'});
+
+  const matCard=el('div',{class:'card',id:'comidas-ingredientes'},
+    el('h2',{},'Ingredientes, servicios y otros gastos'),
+    el('p',{class:'sub'},'Los litros se convierten a ml, los kilos a g y las docenas a unidades. La cantidad disponible incluye todas las veces que se comprará cada ingrediente.'),
+    el('div',{class:'table-wrap'},el('table',{},
+      el('thead',{},el('tr',{},el('th',{},'Nombre'),el('th',{},'Costo total (S/)'),el('th',{},'Cantidad que viene'),el('th',{},'Tipo de medida'),el('th',{},'Cantidad de veces a comprar'),el('th',{},'Tipo'),el('th',{},'Costo por medida'),el('th',{}))),
+      el('tbody',{},...S.materiales.map(m=>el('tr',{},
+        el('td',{},el('input',{type:'text',value:m.nombre,oninput:e=>{m.nombre=e.target.value;}})),
+        el('td',{},el('input',{type:'number',value:m.costoTotal,onchange:e=>withScroll(()=>{m.costoTotal=e.target.value;rerender();})})),
+        el('td',{},m.tipo==='fisico'?el('input',{type:'number',value:m.cantidadViene,onchange:e=>withScroll(()=>{m.cantidadViene=e.target.value;rerender();})}):el('span',{style:'color:var(--muted)'},'—')),
+        el('td',{},m.tipo==='fisico'?el('select',{onchange:e=>{m.medida=e.target.value;rerender();}},...['L','ml','Kg','g','unidad','docena'].map(x=>el('option',{value:x,...(m.medida===x?{selected:'selected'}:{})},x))):el('span',{style:'color:var(--muted)'},'—')),
+        el('td',{},m.tipo==='fisico'?el('input',{type:'number',min:'1',value:m.vecesComprar??1,onchange:e=>withScroll(()=>{m.vecesComprar=e.target.value;rerender();})}):el('span',{style:'color:var(--muted)'},'—')),
+        el('td',{},el('select',{onchange:e=>{m.tipo=e.target.value;if(m.tipo==='prorateado')S.productos.forEach(p=>{p.uso=p.uso||{};p.uso[m.id]=1;});rerender();}},el('option',{value:'fisico',...(m.tipo==='fisico'?{selected:'selected'}:{})},'Por medida'),el('option',{value:'prorateado',...(m.tipo==='prorateado'?{selected:'selected'}:{})},'Prorrateado (producción total)'))),
+        el('td',{},el('span',{class:'pill'},m.tipo==='prorateado'?'S/ '+fmtCostoUnitario(costoPorMedida(m))+' c/u':'S/ '+fmtCostoUnitario(costoPorMedida(m))+' por '+unidadBase(m))),
+        el('td',{},el('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.materiales=S.materiales.filter(x=>x.id!==m.id);S.productos.forEach(p=>delete p.uso[m.id]);rerender();}},'✕'))
+      )))
+    ))
+  );
+  matCard.appendChild(el('button',{class:'btn btn-ghost btn-sm',style:'margin-top:10px',onclick:()=>{S.materiales.push(nuevoIngrediente());rerender();}},'+ Agregar ingrediente'));
+  c.appendChild(matCard);
+
+  const prodWrap=el('div',{class:'card',id:'comidas-productos'},el('h2',{},'Productos'),el('p',{class:'sub'},'Marca los ingredientes de cada preparación e indica la cantidad a usar por unidad del producto.'));
+  prodWrap.appendChild(el('div',{class:'row-flex',style:'margin:4px 0 14px'},el('span',{style:'font-size:12.5px;color:var(--muted);font-weight:600'},'Margen de ganancia para todos:'),el('input',{type:'number',value:S.margenGlobal??'',placeholder:'%',style:'width:90px',onchange:e=>{S.margenGlobal=e.target.value;saveState();}}),el('span',{style:'color:var(--muted);font-size:12px'},'%'),el('button',{class:'btn btn-ghost btn-sm',onclick:()=>{S.productos.forEach(p=>{p.metodo='margen';p.margen=num(S.margenGlobal);});rerender();}},'Establecer para todos')));
+  const resumen=[];
+  S.productos.forEach(p=>{
+    p.uso=p.uso||{};
+    const cvu=S.materiales.reduce((s,m)=>s+(p.uso[m.id]!=null?costoPorMedida(m)*num(p.uso[m.id]):0),0);
+    const cant=num(p.cantidad), costo=cvu*cant;
+    let precio=p.metodo==='objetivo'?(costo+num(p.gananciaObjetivo))/(cant||1):p.metodo==='manual'?num(p.precioManual):cvu*(1+num(p.margen)/100);
+    const precioRedondeado=Math.ceil(precio), precioUsado=p.basePrecio==='redondeado'?precioRedondeado:precio, ingreso=precioUsado*cant, utilidad=ingreso-costo, pe=cvu>0?costo/precioUsado:0;
+    resumen.push({nombre:p.nombre,cant,cvu,precio:precioUsado,ingreso,costo,utilidad,pe});
+    const pc=el('div',{class:'product-card',id:'comidas-producto-'+p.id});
+    pc.appendChild(el('div',{class:'phead'},el('input',{type:'text',value:p.nombre,oninput:e=>{p.nombre=e.target.value;}}),el('span',{class:'tag'},'Producción: '+cant+' u.'),el('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.productos=S.productos.filter(x=>x.id!==p.id);rerender();}},'✕ Quitar producto')));
+    pc.appendChild(el('div',{class:'grid cols-2'},field('Cantidad a producir',p.cantidad,v=>{p.cantidad=v;rerender();}),el('div',{},el('label',{},'Costo variable unitario (CVu)'),el('div',{class:'result info',style:'margin-top:0'},el('div',{class:'val'},'S/ '+fmt(cvu))))));
+    pc.appendChild(el('div',{class:'row-flex',style:'margin:10px 0 4px'},el('div',{style:'font-size:12.5px;color:var(--muted);font-weight:600'},'Ingredientes que usa este producto'),el('button',{class:'btn btn-ghost btn-sm',onclick:()=>{p.soloSeleccionados=!p.soloSeleccionados;rerender();}},p.soloSeleccionados?'▴ Mostrar todos':'▾ Solo seleccionados')));
+    S.materiales.filter(m=>!p.soloSeleccionados||p.uso[m.id]!=null).forEach(m=>{
+      const checked=p.uso[m.id]!=null, prorateado=m.tipo==='prorateado';
+      pc.appendChild(el('div',{class:'checkline'},el('input',{type:'checkbox',checked:checked?'checked':null,disabled:prorateado?'disabled':null,title:prorateado?'Se incluye automáticamente por ser prorrateado':'',onchange:e=>{if(e.target.checked)p.uso[m.id]=1;else delete p.uso[m.id];rerender();}}),el('span',{class:'name'},m.nombre,' ',el('span',{style:'color:var(--muted);font-size:11.5px'},prorateado?'(S/ '+fmtCostoUnitario(costoPorMedida(m))+' c/u · prorrateado)':'(S/ '+fmtCostoUnitario(costoPorMedida(m))+' por '+unidadBase(m)+' | '),!prorateado?el('span',{class:cantidadRestante(m)<0?'inventory-negative':'',style:'font-size:11.5px'},fmtCantidad(cantidadRestante(m))+' '+unidadBase(m)+' restante'):null,el('span',{style:'color:var(--muted);font-size:11.5px'},prorateado?'':')')),checked?(prorateado?el('input',{type:'number',value:1,disabled:'disabled',title:'Prorrateado por producción total'}):el('input',{type:'number',min:'0',step:'0.01',value:p.uso[m.id],title:'Cantidad a usar en '+unidadBase(m),onchange:e=>withScroll(()=>{p.uso[m.id]=e.target.value;rerender();})})):el('span',{style:'width:80px;display:inline-block'})));
+    });
+    pc.appendChild(el('div',{style:'margin:14px 0 4px;font-size:12.5px;color:var(--muted);font-weight:600'},'Precio de venta'));
+    pc.appendChild(el('div',{class:'row-flex'},el('select',{onchange:e=>{p.metodo=e.target.value;rerender();}},el('option',{value:'margen',...(p.metodo==='margen'?{selected:'selected'}:{})},'Margen de ganancia %'),el('option',{value:'objetivo',...(p.metodo==='objetivo'?{selected:'selected'}:{})},'Ganancia total objetivo'),el('option',{value:'manual',...(p.metodo==='manual'?{selected:'selected'}:{})},'Precio específico')),p.metodo==='margen'?el('input',{type:'number',value:p.margen,onchange:e=>withScroll(()=>{p.margen=e.target.value;rerender();}),style:'width:110px'}):null,p.metodo==='margen'?el('span',{style:'color:var(--muted);font-size:12px'},'%'):null,p.metodo==='objetivo'?el('input',{type:'number',value:p.gananciaObjetivo,onchange:e=>withScroll(()=>{p.gananciaObjetivo=e.target.value;rerender();}),style:'width:140px'}):null,p.metodo==='manual'?el('input',{type:'number',value:p.precioManual,onchange:e=>withScroll(()=>{p.precioManual=e.target.value;rerender();}),style:'width:110px'}):null));
+    pc.appendChild(el('div',{class:'row-flex',style:'margin-top:8px'},el('span',{style:'color:var(--muted);font-size:12px'},'Usar para ingreso y utilidad:'),el('select',{onchange:e=>{p.basePrecio=e.target.value;rerender();}},el('option',{value:'calculado',...((p.basePrecio||'calculado')==='calculado'?{selected:'selected'}:{})},'Precio de venta calculado'),el('option',{value:'redondeado',...(p.basePrecio==='redondeado'?{selected:'selected'}:{})},'Precio redondeado sugerido'))));
+    pc.appendChild(el('div',{class:'result-grid',style:'margin-top:12px'},resultBox('Costo total del producto','S/ '+fmt(costo),'info'),resultBox('Precio de venta','S/ '+fmt(precio),'info'),resultBox('Precio redondeado sugerido','S/ '+precioRedondeado,'info'),resultBox('Ingreso total','S/ '+fmt(ingreso),'info'),resultBox('Utilidad','S/ '+fmt(utilidad),utilidad>=0?'pos':'neg'),resultBox('Mínimo de unidades para cubrir costos',fmt(pe)+' u. = '+Math.ceil(pe).toLocaleString('es-PE')+' u. (redondeado)','info')));
+    prodWrap.appendChild(pc);
+  });
+  prodWrap.appendChild(el('button',{class:'btn btn-primary btn-sm',onclick:()=>{const uso={};S.materiales.filter(m=>m.tipo==='prorateado').forEach(m=>uso[m.id]=1);S.productos.push({id:uid(),nombre:'Nueva preparación',cantidad:0,uso,metodo:'margen',margen:0,gananciaObjetivo:0,precioManual:0});rerender();}},'+ Agregar producto'));
+  c.appendChild(prodWrap);
+  const ingredientesFisicos=S.materiales.filter(m=>m.tipo==='fisico');
+  const dineroSobranteIngredientes=ingredientesFisicos.reduce((s,m)=>s+Math.max(0,cantidadRestante(m))*costoPorMedida(m),0);
+  const costoTotalCompradoIngredientes=S.materiales.reduce((s,m)=>s+num(m.costoTotal)*(m.tipo==='fisico'?(num(m.vecesComprar)||1):1),0);
+  const resumenIngredientes=el('div',{class:'card',id:'comidas-resumen-ingredientes'},
+    el('h2',{},'Resumen de ingredientes'),
+    el('p',{class:'sub'},'El saldo se calcula con el consumo de todas las preparaciones. Se alerta cuando representa 25% o más de lo comprado.'),
+    el('div',{class:'table-wrap'},el('table',{},
+      el('thead',{},el('tr',{},el('th',{},'Nombre del ingrediente'),el('th',{},'Cantidad que sobró'),el('th',{},'Dinero que representa esta cantidad sobrante'))),
+      el('tbody',{},...ingredientesFisicos.map(m=>el('tr',{},
+        el('td',{},m.nombre),
+        el('td',{class:cantidadRestante(m)<0?'inventory-negative':''},fmtCantidad(cantidadRestante(m))+' '+unidadBase(m)),
+        el('td',{},'S/ '+fmt(valorSobrante(m)),sobranteAlto(m)?el('span',{class:'inventory-warning',title:'Alerta: el valor sobrante de este ingrediente representa 25% o más de lo comprado.'},'⚠ Sobrante alto'):null)
+      )))
+    )),
+    el('div',{class:'result-grid',style:'margin-top:16px'},
+      resultBox('Dinero gastado extra (sobrante)','S/ '+fmt(dineroSobranteIngredientes),dineroSobranteIngredientes>0?'neg':'info'),
+      resultBox('% de los costos totales comprados',fmt(costoTotalCompradoIngredientes>0?dineroSobranteIngredientes/costoTotalCompradoIngredientes*100:0)+'%',dineroSobranteIngredientes>0?'neg':'info')
+    )
+  );
+  c.appendChild(resumenIngredientes);
+  const ingresos=resumen.reduce((s,p)=>s+p.ingreso,0), costos=resumen.reduce((s,p)=>s+p.costo,0), utilidad=ingresos-costos, pct=ingresos>0?utilidad/ingresos*100:0;
+  const tablaResumen=el('div',{class:'table-wrap'},
+    el('table',{},
+      el('thead',{},el('tr',{},
+        el('th',{},'Producto'),el('th',{},'Cantidad'),
+        el('th',{},'Precio de fabricación'),el('th',{},'Precio de venta'),el('th',{},'Ingreso total'),
+        el('th',{},'Utilidad'),el('th',{},'Mínimo de unidades para cubrir costos')
+      )),
+      el('tbody',{},...resumen.map(p=>el('tr',{},
+        el('td',{},p.nombre),el('td',{},fmtCantidad(p.cant)),
+        el('td',{},'S/ '+fmt(p.cvu)),el('td',{},'S/ '+fmt(p.precio)),el('td',{},'S/ '+fmt(p.ingreso)),
+        el('td',{},'S/ '+fmt(p.utilidad)),el('td',{},fmt(p.pe)+' u. = '+Math.ceil(p.pe).toLocaleString('es-PE')+' u.')
+      )))
+    )
+  );
+  const resumenProductosCard=el('div',{class:'card',id:'comidas-resumen-productos'},
+    el('h2',{},'Resumen total de productos'),
+    el('p',{class:'sub'},'Los precios, ingresos y utilidades reflejan la opción elegida en cada preparación.'),
+    tablaResumen,
+    el('div',{class:'result-grid',style:'margin-top:16px'},
+      resultBox('Ingresos totales','S/ '+fmt(ingresos),'info'),
+      resultBox('Costos variables','S/ '+fmt(costos),'info'),
+      resultBox('Utilidad','S/ '+fmt(utilidad),utilidad>=0?'pos':'neg'),
+      resultBox('% de utilidad',fmt(pct)+'%',utilidad>=0?'pos':'neg')
+    )
+  );
+  c.appendChild(resumenProductosCard);
+  addCosteoIndex(c,{materialesLabel:'Ingredientes',materialesId:'comidas-ingredientes',productosId:'comidas-productos',productos:S.productos,productoPrefix:'comidas-producto-',resumenMaterialesLabel:'Resumen de ingredientes',resumenMaterialesId:'comidas-resumen-ingredientes',resumenProductosId:'comidas-resumen-productos'});
+  c.appendChild(el('div',{class:'hint'},'Producción total combinada: <b>'+totalProduccion+' unidades</b>. Los gastos prorrateados se reparten entre todas las unidades.'));
+  saveState();
+}
+
+/* ===================== RENDER: PROYECCION ===================== */
+function renderProyeccion(container, data, rerender){
+  const c = container; c.innerHTML='';
+  const S = data;
+  const pts = S.meses.map((m,i)=>({x:i+1,y:num(m.ventas)}));
+  const reg = pts.length>=2 ? linreg(pts) : {n:0};
+
+  const card = el('div',{class:'card'},
+    el('h2',{},'Ventas históricas'),
+    el('p',{class:'sub'},'Escribe las ventas de cada mes. Con al menos 2 meses se calcula la recta de tendencia (y = ax + b) para proyectar ventas futuras.'),
+  );
+  const wrap = el('div',{class:'table-wrap'});
+  const table = el('table',{},
+    el('thead',{},el('tr',{},el('th',{},'Mes'),el('th',{},'N° de mes (X)'),el('th',{},'Ventas (Y)'),el('th',{},'XY'),el('th',{},'X²'),el('th',{}))),
+    el('tbody',{}, ...S.meses.map((m,i)=>{
+      const x=i+1, y=num(m.ventas);
+      return el('tr',{},
+        el('td',{},el('input',{type:'text',value:m.nombre,oninput:e=>{m.nombre=e.target.value;}})),
+        el('td',{},el('span',{class:'pill'},''+x)),
+        el('td',{},el('input',{type:'number',value:m.ventas,onchange:e=>withScroll(()=>{m.ventas=e.target.value;rerender();})})),
+        el('td',{style:'color:var(--muted)'}, fmt(x*y)),
+        el('td',{style:'color:var(--muted)'}, fmt(x*x)),
+        el('td',{},el('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.meses=S.meses.filter(x=>x.id!==m.id);rerender();}},'✕'))
+      );
+    })),
+    reg.n ? el('tfoot',{},el('tr',{style:'font-weight:700'},
+      el('td',{},'Suma'), el('td',{},''), el('td',{},fmt(reg.sy)), el('td',{},fmt(reg.sxy)), el('td',{},fmt(reg.sxx)), el('td',{})
+    )) : null
+  );
+  wrap.appendChild(table);
+  card.appendChild(wrap);
+  card.appendChild(el('button',{class:'btn btn-ghost btn-sm',style:'margin-top:10px',onclick:()=>{S.meses.push({id:uid(),nombre:'Mes '+(S.meses.length+1),ventas:0});rerender();}},'+ Agregar mes'));
+  c.appendChild(card);
+
+  const infoA = reg.n ? `<b>a = (nΣxy − ΣxΣy) / (nΣx² − (Σx)²)</b><br>
+    a = (${reg.n}×${fmt(reg.sxy)} − ${fmt(reg.sx)}×${fmt(reg.sy)}) / (${reg.n}×${fmt(reg.sxx)} − ${fmt(reg.sx)}²)<br>
+    a = ${fmt(reg.n*reg.sxy - reg.sx*reg.sy)} / ${fmt(reg.n*reg.sxx - reg.sx*reg.sx)}<br>
+    <b>a = ${reg.a.toFixed(4)}</b>` : '';
+  const infoB = reg.n ? `<b>b = (Σy − aΣx) / n</b><br>
+    b = (${fmt(reg.sy)} − ${reg.a.toFixed(4)}×${fmt(reg.sx)}) / ${reg.n}<br>
+    <b>b = ${reg.b.toFixed(4)}</b>` : '';
+  const yObjetivo = reg.n ? reg.a*num(S.mesObjetivo)+reg.b : NaN;
+  const infoY = reg.n ? `<b>y = ax + b</b><br>
+    y = ${reg.a.toFixed(4)}×${S.mesObjetivo} + ${reg.b.toFixed(4)}<br>
+    <b>y = ${fmt(yObjetivo)}</b>` : '';
+  const infoR2 = reg.n ? `<b>z (ȳ) = Σy / n</b><br>
+    z = ${fmt(reg.sy)} / ${reg.n} = <b>${reg.z.toFixed(4)}</b><br><br>
+    <b>R² = 1 − (Σ(y−y')² / Σ(y−ȳ)²)</b><br>
+    R² = 1 − (${fmt(reg.ssRes)} / ${fmt(reg.ssTot)})<br>
+    <b>R² = ${(reg.r2*100).toFixed(2)}%</b>` : '';
+
+  const resCard = el('div',{class:'card'},
+    el('h2',{},'Paso a paso de la recta y = ax + b'),
+    el('div',{class:'result-grid'},
+      resultBox('Pendiente (a)', reg.n? reg.a.toFixed(4):'—','info',infoA),
+      resultBox('Intersección (b)', reg.n? reg.b.toFixed(4):'—','info',infoB),
+      resultBox('Confiabilidad (R²)', reg.n? (reg.r2*100).toFixed(2)+'%':'—', reg.n? (reg.r2>=0.9?'pos':'neg'):'info', infoR2),
+      resultBox('Ecuación', reg.n? ('y = '+reg.a.toFixed(4)+'x + '+reg.b.toFixed(4)) : '—','info'),
+    ),
+    el('div',{class:'hint'}, reg.n ? ('R² '+(reg.r2>=0.9?'≥ 90% → el modelo es confiable.':'< 90% → el modelo tiene baja confiabilidad.')) : 'Agrega al menos 2 meses con ventas.')
+  );
+  c.appendChild(resCard);
+
+  const projCard = el('div',{class:'card'},
+    el('h2',{},'Proyectar un mes'),
+    el('div',{class:'grid cols-2'},
+      field('N° del mes a proyectar (X)', S.mesObjetivo, v=>{S.mesObjetivo=v;rerender();}),
+      el('div',{},el('label',{},'Ventas proyectadas (Y)'),
+        el('div',{class:'result info',style:'margin-top:0'}, reg.n?infoIcon(infoY):null, el('div',{class:'val'}, reg.n? fmt(yObjetivo) : '—')))
+    )
+  );
+  c.appendChild(projCard);
+
+  if(reg.n){
+    const rvCard = el('div',{class:'card'},
+      el('h2',{},'Real vs Ideal y Real vs Constante'),
+      el('p',{class:'sub'},"y' (ideal) = a·x + b usa la recta calculada; ȳ (constante) es el promedio de todas las ventas."),
+    );
+    const rvWrap = el('div',{class:'table-wrap'});
+    const rvTable = el('table',{},
+      el('thead',{},el('tr',{},
+        el('th',{},'Mes'),el('th',{},'y (real)'),el('th',{},"y' (ideal)"),el('th',{},"y − y'"),el('th',{},"(y − y')²"),
+        el('th',{},'ȳ (constante)'),el('th',{},'y − ȳ'),el('th',{},'(y − ȳ)²'),
+      )),
+      el('tbody',{}, ...reg.detalle.map((d,i)=>el('tr',{},
+        el('td',{},S.meses[i].nombre),
+        el('td',{},fmt(d.y)),
+        el('td',{},fmt(d.yIdeal)),
+        el('td',{},fmt(d.diffIdeal)),
+        el('td',{},fmt(d.diffIdeal2)),
+        el('td',{},fmt(reg.z)),
+        el('td',{},fmt(d.diffConst)),
+        el('td',{},fmt(d.diffConst2)),
+      ))),
+      el('tfoot',{},el('tr',{style:'font-weight:700'},
+        el('td',{},'Suma'),el('td',{}),el('td',{}),el('td',{}),
+        el('td',{},fmt(reg.ssRes)),el('td',{}),el('td',{}),el('td',{},fmt(reg.ssTot))
+      ))
+    );
+    rvWrap.appendChild(rvTable);
+    rvCard.appendChild(rvWrap);
+    c.appendChild(rvCard);
+  }
+  saveState();
+}
+
+/* ===================== RENDER: FLUJO DE CAJA ===================== */
+function renderFlujo(container, data, rerender){
+  const c = container; c.innerHTML='';
+  const S = data;
+
+  const cats = el('div',{class:'card'},
+    el('h2',{},'Categorías de costos fijos'),
+    el('p',{class:'sub'},'Estas categorías se repiten en cada mes (agrégalas o quítalas una sola vez aquí).'),
+    el('div',{class:'row-flex'}, ...S.costosFijosCategorias.map(cat=>
+      el('span',{class:'row-flex chip',style:'border-radius:999px;padding:4px 6px 4px 12px'},
+        el('input',{type:'text',value:cat.nombre,style:'width:120px;border:none;background:transparent;padding:2px',oninput:e=>{cat.nombre=e.target.value;}}),
+        el('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.costosFijosCategorias=S.costosFijosCategorias.filter(x=>x.id!==cat.id); S.meses.forEach(m=>delete m.fijos[cat.id]); rerender();}},'✕')
+      )
+    )),
+    el('button',{class:'btn btn-ghost btn-sm',style:'margin-top:10px',onclick:()=>{const nc={id:uid(),nombre:'Nuevo costo fijo'}; S.costosFijosCategorias.push(nc); S.meses.forEach(m=>m.fijos[nc.id]=0); rerender();}},'+ Agregar categoría')
+  );
+  c.appendChild(cats);
+
+  const saldoCard = el('div',{class:'card'},
+    el('h2',{},'Saldo inicial'),
+    field('Saldo de caja al empezar (S/)', S.saldoInicial, v=>{S.saldoInicial=v;rerender();})
+  );
+  c.appendChild(saldoCard);
+
+  let acumulado = num(S.saldoInicial);
+  const calc = S.meses.map(m=>{
+    const ingreso = num(m.cantidad)*num(m.precio);
+    const compras = num(m.cantidad)*num(m.cvu);
+    const fijos = S.costosFijosCategorias.reduce((s,cat)=>s+num(m.fijos[cat.id]),0);
+    const egresos = compras+fijos;
+    const flujoMes = ingreso-egresos;
+    acumulado += flujoMes;
+    return {ingreso,compras,fijos,egresos,flujoMes,acumulado};
+  });
+
+  function makeMesesHead(){
+    return el('tr',{}, el('th',{},'Concepto'), ...S.meses.map((m,i)=>el('th',{},
+      el('div',{class:'row-flex'}, el('input',{type:'text',value:m.nombre,style:'width:90px',oninput:e=>{m.nombre=e.target.value;}}),
+        el('button',{class:'btn btn-danger btn-sm',onclick:()=>{S.meses=S.meses.filter(x=>x.id!==m.id);rerender();}},'✕')))));
+  }
+  function addMonthBtn(){
+    return el('button',{class:'btn btn-ghost btn-sm',style:'margin-top:10px',onclick:()=>{
+      const nm={id:uid(),nombre:'Mes '+(S.meses.length+1),cantidad:0,precio:0,cvu:0,fijos:{}};
+      S.costosFijosCategorias.forEach(cat=>nm.fijos[cat.id]=0);
+      S.meses.push(nm); rerender();
+    }},'+ Agregar mes');
+  }
+  function numRow(label,key,bold){
+    return el('tr',{}, el('td',{html: bold?'<b>'+label+'</b>':label},),
+      ...S.meses.map(m=> el('td',{}, el('input',{type:'number',value:m[key],onchange:e=>withScroll(()=>{m[key]=e.target.value;rerender();})}))));
+  }
+  function calcRow(label,fn,style){
+    return el('tr',{}, el('td',{html:'<b>'+label+'</b>'}), ...calc.map(x=>el('td',{style:style||''},'S/ '+fmt(fn(x)))));
+  }
+
+  const ingresosCard = el('div',{class:'card'},
+    el('h2',{},'Ingresos a Caja'),
+    el('p',{class:'sub'},'Cantidad de productos vendidos y su precio. El ingreso se calcula solo (Cantidad × Precio).'),
+    el('div',{class:'table-wrap'}, el('table',{},
+      el('thead',{},makeMesesHead()),
+      el('tbody',{},
+        numRow('Cantidad de productos','cantidad'),
+        numRow('Precio del producto','precio'),
+        calcRow('Ingreso a Caja / Ventas', x=>x.ingreso, 'font-weight:700'),
+      )
+    )),
+    addMonthBtn()
+  );
+  c.appendChild(ingresosCard);
+
+  const egresosCard = el('div',{class:'card'},
+    el('h2',{},'Egresos de Caja'),
+    el('p',{class:'sub'},'La cantidad se toma directamente del bloque de Ingresos (no se repite) para que nunca queden distintas por error.'),
+  );
+  const etable = el('table',{});
+  etable.appendChild(el('thead',{},makeMesesHead()));
+  const ebody = el('tbody',{},
+    el('tr',{}, el('td',{},'Cantidad de fabricación / compra'), ...S.meses.map(m=>el('td',{style:'color:var(--muted)'}, String(m.cantidad||0)))),
+    numRow('Costo de fabricación o compra (CVu)','cvu'),
+    calcRow('Compras (Cantidad × CVu)', x=>x.compras),
+  );
+  S.costosFijosCategorias.forEach(cat=>{
+    ebody.appendChild(el('tr',{}, el('td',{},cat.nombre),
+      ...S.meses.map(m=>el('td',{},el('input',{type:'number',value:m.fijos[cat.id]||0,onchange:e=>withScroll(()=>{m.fijos[cat.id]=e.target.value;rerender();})})))
+    ));
+  });
+  ebody.appendChild(el('tr',{}, el('td',{html:'<b>Costos fijos</b>'}), ...calc.map(x=>el('td',{},'S/ '+fmt(x.fijos)))));
+  ebody.appendChild(el('tr',{}, el('td',{html:'<b>Egresos de Caja</b>'}), ...calc.map(x=>el('td',{style:'font-weight:700'},'S/ '+fmt(x.egresos)))));
+  etable.appendChild(ebody);
+  egresosCard.appendChild(el('div',{class:'table-wrap'},etable));
+  egresosCard.appendChild(el('button',{class:'btn btn-ghost btn-sm',style:'margin-top:10px',onclick:()=>{const nc={id:uid(),nombre:'Nuevo costo fijo'}; S.costosFijosCategorias.push(nc); S.meses.forEach(m=>m.fijos[nc.id]=0); rerender();}},'+ Agregar categoría de costo fijo'));
+  c.appendChild(egresosCard);
+
+  const resultCard = el('div',{class:'card'},
+    el('h2',{},'Flujo del mes, acumulado y neto'),
+    el('div',{class:'table-wrap'}, el('table',{},
+      el('thead',{},makeMesesHead()),
+      el('tbody',{},
+        calcRow('Flujo del mes (Ingresos − Egresos)', x=>x.flujoMes, ''),
+        calcRow('Flujo acumulado', x=>x.acumulado, 'font-weight:700'),
+        calcRow('Flujo neto', x=>x.flujoMes, ''),
+      )
+    ))
+  );
+  c.appendChild(resultCard);
+  saveState();
+}
+
+/* ===================== RENDER: ESTADO FINANCIERO ===================== */
+function renderEdo(container, data, rerender){
+  const c = container; c.innerHTML='';
+  const E = data;
+  const ventas = num(E.precio)*num(E.cantidad);
+  const cbv = num(E.cvu)*num(E.cantidad);
+  const gananciaBruta = ventas-cbv;
+  const gastos = num(E.costosFijos);
+  const gananciaAntesIntImp = gananciaBruta-gastos;
+  const gananciaAntesImp = gananciaAntesIntImp - num(E.intereses);
+  const impuesto = gananciaAntesImp*(num(E.impuestoPct)/100);
+  const gananciaNeta = gananciaAntesImp-impuesto;
+  const dividendos = gananciaNeta*(num(E.dividendosPct)/100);
+  const reservas = gananciaNeta*(num(E.reservasPct)/100);
+
+  c.appendChild(el('div',{class:'card'},
+    el('h2',{},'Datos del periodo'),
+    el('div',{class:'grid cols-3'},
+      field('Precio de venta', E.precio, v=>{E.precio=v;rerender();}),
+      field('Costo variable unitario (CVu)', E.cvu, v=>{E.cvu=v;rerender();}),
+      field('Cantidad vendida', E.cantidad, v=>{E.cantidad=v;rerender();}),
+      field('Costos fijos / gastos', E.costosFijos, v=>{E.costosFijos=v;rerender();}),
+      field('Intereses', E.intereses, v=>{E.intereses=v;rerender();}),
+      field('Impuesto (%)', E.impuestoPct, v=>{E.impuestoPct=v;rerender();}),
+      field('Dividendos (%)', E.dividendosPct, v=>{E.dividendosPct=v;rerender();}),
+      field('Reservas (%)', E.reservasPct, v=>{E.reservasPct=v;rerender();}),
+    )
+  ));
+
+  c.appendChild(el('div',{class:'card'},
+    el('h2',{},'Estado de resultados'),
+    el('div',{class:'table-wrap'},
+      el('table',{},
+        el('tbody',{},
+          rowEdo('Ventas',ventas),
+          rowEdo('Costo de los bienes vendidos',cbv),
+          rowEdo('Ganancia bruta',gananciaBruta,true),
+          rowEdo('Gastos',gastos),
+          rowEdo('Ganancia neta antes de intereses e impuestos',gananciaAntesIntImp,true),
+          rowEdo('Intereses',num(E.intereses)),
+          rowEdo('Ganancia neta antes de impuestos',gananciaAntesImp,true),
+          rowEdo('Impuestos',impuesto),
+          rowEdo('Ganancia neta después de impuestos',gananciaNeta,true),
+          rowEdo('Dividendos',dividendos),
+          rowEdo('Reservas',reservas),
+        )
+      )
+    )
+  ));
+  function rowEdo(label,val,strong){
+    return el('tr',{}, el('td',{html: strong?'<b>'+label+'</b>':label}), el('td',{style:'text-align:right;'+(strong?'font-weight:700':'')},'S/ '+fmt(val)));
+  }
+  saveState();
+}
+
+/* ===================== TIPOS DE PESTAÑA ===================== */
+const PAGE_TYPES = {
+  formulas:    {icon:'📐', text:'Fórmulas',                make:defaultFormulas,    render:renderFormulas},
+  costeo:      {icon:'🧮', text:'Costo unitario y precio (productos)', make:defaultCosteo, render:renderCosteo},
+  costeoComidas:{icon:'🍽️', text:'Costo unitario y precio (ingredientes de comidas)', make:defaultCosteoComidas, render:renderCosteoComidas},
+  proyeccion:  {icon:'📈', text:'Proyección de ventas',    make:defaultProyeccion,  render:renderProyeccion},
+  flujo:       {icon:'💵', text:'Flujo de caja',           make:defaultFlujo,       render:renderFlujo},
+  edo:         {icon:'📄', text:'Estado financiero',       make:defaultEdo,         render:renderEdo},
+};
+const PAGE_ORDER = ['formulas','costeo','costeoComidas','proyeccion','flujo','edo'];
+// quita un emoji-icono inicial que haya quedado guardado en el nombre (versiones/exportaciones anteriores)
+function stripIcon(nombre, type){
+  const icon = PAGE_TYPES[type] && PAGE_TYPES[type].icon;
+  if(!icon || !nombre) return nombre;
+  return nombre.startsWith(icon) ? nombre.slice(icon.length).trim() : nombre;
+}
+
+/* ===================== ESTADO GLOBAL (PESTAÑAS) ===================== */
+const STORAGE_KEY = 'finanzas-app-datos-v2';
+const OLD_STORAGE_KEY = 'finanzas-app-datos-v1';
+let appState = { pages: [], activePage: null };
+
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); }catch(e){}
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      if(d && Array.isArray(d.pages) && d.pages.length){
+        appState.pages = d.pages.map(p=>{
+          const nombre=stripIcon(p.nombre, p.type);
+          return {...p, nombre:(p.type==='costeo' && nombre==='Costo unitario y precio') ? PAGE_TYPES.costeo.text : nombre};
+        });
+        appState.activePage = (d.activePage && appState.pages.some(p=>p.id===d.activePage)) ? d.activePage : appState.pages[0].id;
+        return true;
+      }
+    }
+  }catch(e){}
+  // migración desde la versión anterior de una sola pestaña por sección
+  try{
+    const old = localStorage.getItem(OLD_STORAGE_KEY);
+    if(old){
+      const d = JSON.parse(old);
+      const pages = [];
+      PAGE_ORDER.forEach(k=>{ if(d[k]!=null) pages.push({id:uid(), type:k, nombre:PAGE_TYPES[k].text, data:d[k]}); });
+      if(pages.length){ appState.pages = pages; appState.activePage = pages[0].id; return true; }
+    }
+  }catch(e){}
+  return false;
+}
+function defaultPages(){
+  return PAGE_ORDER.map(k=>({id:uid(), type:k, nombre:PAGE_TYPES[k].text, data:PAGE_TYPES[k].make()}));
+}
+if(!loadState()){
+  appState.pages = defaultPages();
+  appState.activePage = appState.pages[0].id;
+}
+if(!appState.pages.some(p=>p.type==='costeoComidas')){
+  appState.pages.push({id:uid(),type:'costeoComidas',nombre:PAGE_TYPES.costeoComidas.text,data:defaultCosteoComidas()});
+  saveState();
+}
+
+/* ===================== NAV: PESTAÑAS DINÁMICAS ===================== */
+const tabsWrap = document.getElementById('tabsWrap');
+const actionsWrap = document.getElementById('actionsWrap');
+const pageContainer = document.getElementById('pageContainer');
+
+function getActivePage(){ return appState.pages.find(p=>p.id===appState.activePage) || null; }
+
+function renderActivePage(){
+  pageContainer.innerHTML='';
+  const page = getActivePage();
+  if(!page){
+    pageContainer.appendChild(el('div',{class:'card'}, el('p',{},'No hay pestañas abiertas. Usa el botón "+" para crear una.')));
+    return;
+  }
+  PAGE_TYPES[page.type].render(pageContainer, page.data, renderActivePage);
+}
+
+let dragSrcId = null;
+function renderNav(){
+  tabsWrap.innerHTML='';
+  appState.pages.forEach(page=>{
+    const btn = el('button',{
+      class: 'tabBtn'+(page.id===appState.activePage?' active':''),
+      draggable:'true',
+      onclick:()=>setActive(page.id),
+      ondblclick:()=>renamePage(page),
+      oncontextmenu:e=>{
+        e.preventDefault();
+        showCtxMenu(e.clientX, e.clientY, [
+          {label:'✏️ Renombrar pestaña', onClick:()=>renamePage(page)},
+          {label:'🧹 Limpiar datos', onClick:()=>clearPageData(page)},
+          {label:'🗑️ Eliminar pestaña', danger:true, onClick:()=>deletePage(page)},
+        ]);
+      },
+      ondragstart:e=>{ dragSrcId=page.id; e.dataTransfer.effectAllowed='move'; try{e.dataTransfer.setData('text/plain',page.id);}catch(err){} e.currentTarget.classList.add('dragging'); },
+      ondragend:e=>{ e.currentTarget.classList.remove('dragging'); dragSrcId=null; },
+      ondragover:e=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; },
+      ondrop:e=>{ e.preventDefault(); if(!dragSrcId || dragSrcId===page.id) return; reorderPages(dragSrcId, page.id); }
+    },
+      el('span',{class:'tab-icon'}, PAGE_TYPES[page.type].icon),
+      ' ',
+      el('span',{class:'tab-text'}, page.nombre)
+    );
+    tabsWrap.appendChild(btn);
+  });
+  tabsWrap.appendChild(el('button',{class:'btn-add-tab', title:'Agregar pestaña', onclick:e=>{ e.stopPropagation(); showAddMenu(e.currentTarget); }},'+'));
+}
+function reorderPages(srcId, targetId){
+  const srcIdx = appState.pages.findIndex(p=>p.id===srcId);
+  const tgtIdx = appState.pages.findIndex(p=>p.id===targetId);
+  if(srcIdx<0 || tgtIdx<0) return;
+  const [moved] = appState.pages.splice(srcIdx,1);
+  appState.pages.splice(tgtIdx,0,moved);
+  renderNav(); saveState();
+}
+
+function setActive(id){ appState.activePage=id; renderNav(); renderActivePage(); saveState(); }
+
+function renamePage(page){
+  const nuevo = prompt('Nuevo nombre de la pestaña:', page.nombre);
+  if(nuevo && nuevo.trim()){ page.nombre = nuevo.trim(); renderNav(); saveState(); }
+}
+function clearPageData(page){
+  if(!confirm('¿Borrar todos los datos de "'+page.nombre+'"? Esta acción no se puede deshacer.')) return;
+  page.data = PAGE_TYPES[page.type].make();
+  if(page.id===appState.activePage) renderActivePage();
+  saveState();
+}
+function deletePage(page){
+  if(!confirm('¿Eliminar la pestaña "'+page.nombre+'"? Se perderán sus datos.')) return;
+  appState.pages = appState.pages.filter(p=>p.id!==page.id);
+  if(appState.activePage===page.id){ appState.activePage = appState.pages.length ? appState.pages[0].id : null; }
+  renderNav(); renderActivePage(); saveState();
+}
+function addPage(type){
+  const p = {id:uid(), type, nombre:PAGE_TYPES[type].text, data:PAGE_TYPES[type].make()};
+  appState.pages.push(p);
+  appState.activePage = p.id;
+  renderNav(); renderActivePage(); saveState();
+}
+function showAddMenu(anchor){
+  const rect = anchor.getBoundingClientRect();
+  showCtxMenu(rect.left, rect.bottom+6, PAGE_ORDER.map(k=>({label:'+ '+PAGE_TYPES[k].icon+' '+PAGE_TYPES[k].text, onClick:()=>addPage(k)})));
+}
+
+/* ===================== MENÚ CONTEXTUAL ===================== */
+let ctxMenuEl = null;
+function closeCtxMenu(){ if(ctxMenuEl){ ctxMenuEl.remove(); ctxMenuEl=null; } }
+document.addEventListener('click', closeCtxMenu);
+window.addEventListener('scroll', closeCtxMenu, true);
+function showCtxMenu(x,y,items){
+  closeCtxMenu();
+  const menu = el('div',{class:'ctx-menu', style:`left:${x}px;top:${y}px`});
+  items.forEach(it=>{
+    menu.appendChild(el('div',{class:'ctx-item'+(it.danger?' danger':''), onclick:e=>{ e.stopPropagation(); closeCtxMenu(); it.onClick(); }}, it.label));
+  });
+  document.body.appendChild(menu);
+  // ajustar si se sale de la pantalla
+  const r = menu.getBoundingClientRect();
+  if(r.right>window.innerWidth) menu.style.left=(window.innerWidth-r.width-10)+'px';
+  if(r.bottom>window.innerHeight) menu.style.top=(window.innerHeight-r.height-10)+'px';
+  ctxMenuEl = menu;
+}
+
+/* ===================== EXPORTAR / IMPORTAR ===================== */
+function exportData(){
+  const blob = new Blob([JSON.stringify(appState,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = el('a',{href:url,download:'finanzas-datos.json'});
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+function showAiPromptModal(){
+  const prompts={
+    formulas:{label:'Fórmulas',text:`Primero revisa el archivo HTML de finanzas que te adjunté para entender exactamente su estructura y fórmulas. Luego procesa el contexto o ejercicio que te enviaré. Completa únicamente la pestaña “Fórmulas” (type: "formulas") con los datos necesarios para resolverlo. Devuélveme un archivo JSON descargable e importable, con este formato: {"pages":[{"type":"formulas","nombre":"Fórmulas","data":{...}}]}. No inventes datos: pregunta si falta información.`},
+    productos:{label:'Costo unitario y precio (productos)',text:`Primero revisa el archivo HTML de finanzas que te adjunté para entender la pestaña “Costo unitario y precio (productos)”. Después analizaré enlaces de productos o una lista de productos/materiales que te enviaré. Extrae únicamente la información verificable y completa los materiales, cantidades, veces de compra, productos, checklist, prorrateados y margen cuando corresponda. Devuélveme un archivo JSON descargable e importable con una sola página type: "costeo" y nombre "Costo unitario y precio (productos)". Mantén los IDs coherentes y no inventes precios, cantidades ni datos de enlaces inaccesibles; señálalos para que yo los complete.`},
+    comidas:{label:'Costo unitario y precio (ingredientes de comidas)',text:`Primero revisa el archivo HTML de finanzas que te adjunté para entender la pestaña “Costo unitario y precio (ingredientes de comidas)”. Luego usa el contexto, recetas o lista de compras que te enviaré. Completa ingredientes, costo total, cantidad, medida, veces de compra, tipo, preparaciones, cantidades a usar y precios. Convierte L a ml, Kg a g y docenas a unidades según el HTML. Devuélveme un archivo JSON descargable e importable con una sola página type: "costeoComidas" y nombre "Costo unitario y precio (ingredientes de comidas)". No inventes información faltante.`},
+    proyeccion:{label:'Proyección de ventas',text:`Primero revisa el archivo HTML de finanzas que te adjunté para entender la pestaña “Proyección de ventas”. Luego procesa el contexto y los datos históricos que te enviaré. Completa solo los meses de ventas y el mes objetivo, respetando el cálculo automático del HTML. Devuélveme un archivo JSON descargable e importable con una sola página type: "proyeccion" y nombre "Proyección de ventas". No inventes ventas no proporcionadas.`},
+    flujo:{label:'Flujo de caja',text:`Primero revisa el archivo HTML de finanzas que te adjunté para entender la pestaña “Flujo de caja”. Luego procesa el contexto financiero que te enviaré. Completa saldo inicial, categorías de costos fijos y meses con cantidad, precio, CVu y costos fijos. Devuélveme un archivo JSON descargable e importable con una sola página type: "flujo" y nombre "Flujo de caja". No inventes montos faltantes.`},
+    edo:{label:'Estado financiero',text:`Primero revisa el archivo HTML de finanzas que te adjunté para entender la pestaña “Estado financiero”. Luego resuelve el contexto o ejercicio que te enviaré y completa únicamente precio, CVu, cantidad, costos fijos, intereses, impuesto, dividendos y reservas cuando estén disponibles. Devuélveme un archivo JSON descargable e importable con una sola página type: "edo" y nombre "Estado financiero". No inventes datos faltantes.`}
+  };
+  const overlay=el('div',{class:'modal-overlay'}), close=()=>overlay.remove();
+  const select=el('select',{},...Object.entries(prompts).map(([id,p])=>el('option',{value:id},p.label)));
+  const area=el('textarea',{readonly:'readonly',style:'width:100%;min-height:250px;padding:10px;border:1px solid var(--border);border-radius:9px;resize:vertical;font-family:inherit;font-size:12px;line-height:1.45'},prompts.formulas.text);
+  select.onchange=e=>{area.value=prompts[e.target.value].text;};
+  const copy=()=>{area.select();try{document.execCommand('copy');}catch(e){};};
+  const box=el('div',{class:'modal-box',style:'max-width:780px'},
+    el('h2',{},'Prompt para IA'),
+    el('p',{class:'sub'},'1. Adjunta primero este archivo HTML a la IA. 2. Copia el prompt del apartado que necesites. 3. Envía después tus enlaces de productos —solo para costeo— o el contexto/ejercicio. La IA debe devolverte un JSON descargable para usar “Importar”.'),
+    el('label',{},'Apartado a completar'),select,area,
+    el('div',{class:'row-flex',style:'margin-top:14px;justify-content:flex-end'},el('button',{class:'btn btn-ghost',onclick:copy},'📋 Copiar prompt'),el('button',{class:'btn btn-primary',onclick:close},'Cerrar'))
+  );
+  overlay.appendChild(box);document.body.appendChild(overlay);
+}
+function triggerImport(){
+  const inp = el('input',{type:'file',accept:'application/json',style:'display:none'});
+  inp.onchange = e=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{ showImportModal(JSON.parse(reader.result)); }
+      catch(err){ alert('El archivo no es un JSON válido de esta app.'); }
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(inp); inp.click();
+  setTimeout(()=>inp.remove(),1000);
+}
+function buildImportEntries(data){
+  // Formato nuevo: exportación con varias pestañas
+  if(data && Array.isArray(data.pages) && data.pages.length){
+    return data.pages
+      .filter(p=>PAGE_TYPES[p.type])
+      .map(p=>{
+        const nombre = stripIcon(p.nombre, p.type) || PAGE_TYPES[p.type].text;
+        return { type:p.type, nombre, label:PAGE_TYPES[p.type].icon+' '+nombre+' · '+PAGE_TYPES[p.type].text, pageData:p.data };
+      });
+  }
+  // Formato antiguo: un solo objeto por sección
+  return PAGE_ORDER.filter(k=>data && data[k]!=null).map(k=>({
+    type:k, nombre:PAGE_TYPES[k].text, label:PAGE_TYPES[k].icon+' '+PAGE_TYPES[k].text, pageData:data[k]
+  }));
+}
+function showImportModal(data){
+  const entries = buildImportEntries(data);
+  if(!entries.length){ alert('El archivo no contiene secciones reconocibles para importar.'); return; }
+  const selected = entries.map(()=>true);
+  const overlay = el('div',{class:'modal-overlay'});
+  const close = ()=>overlay.remove();
+  const box = el('div',{class:'modal-box'},
+    el('h2',{},'¿Qué quieres importar?'),
+    el('p',{class:'sub'},'Cada sección marcada se agregará como una pestaña NUEVA. Tus pestañas actuales no se modifican ni se borran.'),
+    ...entries.map((en,i)=> el('div',{class:'checkline'},
+      el('input',{type:'checkbox',checked:'checked', onchange:e=>{selected[i]=e.target.checked;}}),
+      el('span',{class:'name'}, en.label)
+    )),
+    el('div',{class:'row-flex',style:'margin-top:16px;justify-content:flex-end'},
+      el('button',{class:'btn btn-ghost',onclick:close},'Cancelar'),
+      el('button',{class:'btn btn-primary',onclick:()=>{
+        let lastId=null;
+        entries.forEach((en,i)=>{
+          if(!selected[i]) return;
+          const p = {id:uid(), type:en.type, nombre:en.nombre+' (importado)', data:en.pageData};
+          appState.pages.push(p); lastId=p.id;
+        });
+        if(lastId) appState.activePage=lastId;
+        close(); renderNav(); renderActivePage(); saveState();
+      }},'Importar seleccionados como pestañas')
+    )
+  );
+  overlay.appendChild(box);
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) close(); });
+  document.body.appendChild(overlay);
+}
+
+/* ===================== MODO OSCURO Y BOTONES DE ACCIÓN ===================== */
+const darkToggle = el('button',{class:'btn btn-ghost btn-sm',id:'darkToggle',onclick:()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('finanzas-dark', document.body.classList.contains('dark')?'1':'0');
+  darkToggle.textContent = document.body.classList.contains('dark') ? '☀️ Modo claro' : '🌙 Modo oscuro';
+}}, '🌙 Modo oscuro');
+actionsWrap.appendChild(el('button',{class:'btn btn-ghost btn-sm',onclick:showAiPromptModal},'✨ Prompt para IA'));
+actionsWrap.appendChild(el('button',{class:'btn btn-ghost btn-sm',onclick:exportData},'💾 Exportar'));
+actionsWrap.appendChild(el('button',{class:'btn btn-ghost btn-sm',onclick:triggerImport},'📂 Importar'));
+actionsWrap.appendChild(darkToggle);
+if(localStorage.getItem('finanzas-dark')==='1'){ document.body.classList.add('dark'); darkToggle.textContent='☀️ Modo claro'; }
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && document.activeElement && document.activeElement.tagName==='INPUT'){ document.activeElement.blur(); }
+});
+
+/* ===================== INIT ===================== */
+renderNav();
+renderActivePage();
+</script>
+</body>
+</html>
